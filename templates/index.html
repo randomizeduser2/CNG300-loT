@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pico Control Center</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #121212; color: white; }
+        .btn { padding: 15px 30px; font-size: 20px; cursor: pointer; margin: 10px; border-radius: 10px; border: none; }
+        .on { background-color: #4CAF50; color: white; }
+        .off { background-color: #f44336; color: white; }
+        #status-box { border: 1px solid #333; padding: 20px; margin-top: 20px; color: #00ff00; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1>Pico Bluetooth Dashboard</h1>
+
+    <button class="btn on" onclick="sendCommand('on')">Buzzer AÇ</button>
+    <button class="btn off" onclick="sendCommand('off')">Buzzer KAPAT</button>
+
+    <div id="status-box">
+        Pico'dan Gelen Son Mesaj: <span id="pico-msg">Bekleniyor...</span>
+    </div>
+
+    <script>
+        function sendCommand(cmd) {
+            fetch('http://localhost:8000/send/' + cmd, { method: 'POST' });
+        }
+
+        // Her 1 saniyede bir Pico'dan gelen yeni veri var mı diye kontrol et
+        setInterval(() => {
+            fetch('http://localhost:8000/pico-status')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('pico-msg').innerText = data.message;
+                });
+        }, 1000);
+    </script>
+</body>
+</html>
